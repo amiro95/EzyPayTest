@@ -1,0 +1,62 @@
+<div>
+    <h1>Hello World</h1>
+
+    <div nz-row [nzGutter]="16">
+        <div nz-col [nzSpan]="24">
+                <form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm()">
+                        <nz-form-item>
+                          <nz-form-label [nzSm]="8" [nzXs]="24" nzRequired>Amount</nz-form-label>
+                          <nz-form-control [nzSm]="16" [nzXs]="24" >
+                            <nz-input-number (keypress)="numberOnly($event)" formControlName="amount" [nzStep]="1" [nzMin]="1"></nz-input-number>
+                          </nz-form-control>
+                        </nz-form-item>
+
+                        <nz-form-item>
+                          <nz-form-label [nzSm]="8" [nzXs]="24" nzRequired>Subscription Type</nz-form-label>
+                          <nz-form-control [nzSm]="4" [nzXs]="24" >
+                                <nz-select (ngModelChange)="typeChange()" formControlName="type">
+                                        <nz-option nzValue="Daily" nzLabel="Daily"></nz-option>
+                                        <nz-option nzValue="Weekly" nzLabel="Weekly"></nz-option>
+                                        <nz-option nzValue="Monthly" nzLabel="Monthly" ></nz-option>
+                                </nz-select>
+                          </nz-form-control>
+                        </nz-form-item>
+
+                        <nz-form-item>
+                          <nz-form-label [nzSm]="8" [nzXs]="24" nzRequired>Start Date</nz-form-label>
+                          <nz-form-control [nzSm]="16" [nzXs]="24">
+                                <nz-select  *ngIf="this.type == 'Monthly'" (ngModelChange)="typeChange()" formControlName="type">
+                                        <nz-option *ngFor="let option of MonthLov" nzValue="option.value" nzLabel="option.label"></nz-option>
+                                </nz-select>
+                                <nz-input-number  *ngIf="this.type == 'Daily'" formControlName="duration" ></nz-input-number>   
+                          </nz-form-control>
+                        </nz-form-item>
+
+
+                        <!-- <nz-form-item>
+                          <nz-form-label [nzSm]="8" [nzXs]="24" nzRequired>RangePicker</nz-form-label>
+                          <nz-form-control [nzSm]="16" [nzXs]="24">
+                            <nz-range-picker formControlName="rangePicker"></nz-range-picker>
+                          </nz-form-control>
+                        </nz-form-item> -->
+                        <!-- <nz-form-item>
+                          <nz-form-label [nzSm]="8" [nzXs]="24" nzRequired>RangePicker[showTime]</nz-form-label>
+                          <nz-form-control [nzSm]="16" [nzXs]="24">
+                            <nz-range-picker nzShowTime formControlName="rangePickerTime"></nz-range-picker>
+                          </nz-form-control>
+                        </nz-form-item> -->
+                        <!-- <nz-form-item>
+                          <nz-form-label [nzSm]="8" [nzXs]="24" nzRequired>TimePicker</nz-form-label>
+                          <nz-form-control [nzSm]="16" [nzXs]="24">
+                            <nz-time-picker formControlName="timePicker"></nz-time-picker>
+                          </nz-form-control>
+                        </nz-form-item> -->
+                        <!-- <nz-form-item>
+                          <nz-form-control [nzXs]="{ span: 24, offset: 0 }" [nzSm]="{ span: 16, offset: 8 }">
+                            <button nz-button nzType="primary">Submit</button>
+                          </nz-form-control>
+                        </nz-form-item> -->
+                      </form>
+        </div>
+    </div>
+</div>
