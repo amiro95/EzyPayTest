@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
+import { EzypayHomeService } from '../ezypay-home/ezypay-home.service';
+import { NzMessageService } from 'ng-zorro-antd';
 
 @Component({
   selector: 'app-ezypay-home',
@@ -7,26 +9,24 @@ import { FormGroup, FormBuilder } from '@angular/forms';
   styleUrls: ['./ezypay-home.component.scss']
 })
 export class EzypayHomeComponent implements OnInit {
-  validateForm!: FormGroup;
+  subscriptionForm!: FormGroup;
   type: any;
-  MonthLov: any[] = [
-    {
-    label: '1',
-    value: 1,
-    },
-    {
-      label: '2',
-      value: 2,
-    },
-    {
-      label: '3',
-      value: 3,
-    }];
+  minVal = 1;
+  maxVal: number;
+  tooltipInfo: string;
+  subsAmount: any;
+  subsType: any;
+  subsDate = '';
+  subsResp: any[] = [];
 
-  constructor(private fb: FormBuilder) { }
+  constructor(
+    private fb: FormBuilder,
+    private api: EzypayHomeService, 
+    private nzMessage: NzMessageService
+  ) { }
 
   ngOnInit(): void {
-    this.validateForm = this.fb.group({
+    this.subscriptionForm = this.fb.group({
       amount: [null],
       type: [null],
       duration: [null]
@@ -34,9 +34,26 @@ export class EzypayHomeComponent implements OnInit {
   }
 
 
-
   submitForm(): void {
-    console.log(this.validateForm.value);
+    const subscriptionType = this.subscriptionForm.value.type;
+    const amount = this.subscriptionForm.value.amount;
+    const duration = this.subscriptionForm.value.duration;
+    this.api.subscription(subscriptionType,amount,duration).subscribe(
+      resp => {
+        this.subsDate = '';
+        this.subsAmount = resp.amount;
+        this.subsType = resp.subscriptionType;
+        resp.invoiceDates.forEach(obj => {
+          this.subsDate += obj + '<br>';
+        });
+        document.getElementById('date').innerHTML = this.subsDate;
+        this.nzMessage.create('success', 'Subscription Successful');
+      },
+      err => {
+        this.nzMessage.create('error', 'Subscription Failed');
+      }
+    )
+
   }
 
   numberOnly(event): boolean {
@@ -48,12 +65,26 @@ export class EzypayHomeComponent implements OnInit {
 
   }
 
-  typeChange(){
-    this.type = this.validateForm.value.type;
+  typeChange() {
+    this.type = this.subscriptionForm.value.type;
+    switch (this.type) {
+      case 'Daily':
+        this.maxVal = 90;
+        this.tooltipInfo = 'Maximum is 90';
+        break;
+      case 'Weekly':
+        this.maxVal = 12;
+        this.tooltipInfo = 'Maximum is 12';
+        break;
+      case 'Monthly':
+        this.maxVal = 3;
+        this.tooltipInfo = 'Maximum is 3';
+        break;
+    }
     console.log("TYPE: " + this.type);
   }
 
-  onChange(event:any){
+  onChange(event: any) {
     console.log(event)
   }
 }
